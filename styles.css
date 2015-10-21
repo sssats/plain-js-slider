@@ -1,0 +1,13 @@
+.sliderWrapper {
+    background: #ccc;
+    overflow: hidden;
+}
+
+.innerSlider li {
+    display: block;
+    float: left;
+    list-style: none;
+    width: 100%;
+    height: 200px;
+    background: #fcc780;
+}
