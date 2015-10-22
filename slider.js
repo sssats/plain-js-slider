@@ -6,6 +6,7 @@ function Slider(id, userSettings) {
     var sliderWrapper = null;
     var bulletsWrapper = null;
     var controls = null;
+    var paused = false;
 
     innerSlider.className = innerSlider.className == '' ? 'innerSlider' : innerSlider.className + ' innerSlider';
 
@@ -16,8 +17,8 @@ function Slider(id, userSettings) {
         speed: 100,
         direction: 'left',
         loop: true,
-        autoStart: false,
-        move: ''
+        autoPlay: false,
+        easing: ''
     };
 
     var settings = defaultSettings;
@@ -29,6 +30,19 @@ function Slider(id, userSettings) {
             }
         }
     }
+
+    var EasingFunctions = {
+        linear: function (currentIteration, startValue, changeInValue, totalIterations) {
+            return changeInValue * currentIteration / totalIterations + startValue;
+
+        },
+        easeInQuad: function (currentIteration, startValue, changeInValue, totalIterations) {
+            return changeInValue * (currentIteration /= totalIterations) * currentIteration + startValue;
+        },
+        easeOutQuad: function (currentIteration, startValue, changeInValue, totalIterations) {
+            return -changeInValue * (currentIteration /= totalIterations) * (currentIteration - 2) + startValue;
+        }
+    };
 
     var controlsTemplate = '' +
         '<div class="prev"></div>' +
@@ -84,7 +98,7 @@ function Slider(id, userSettings) {
         }
 
         innerSlider.style.width = totalWidth + 'px';
-    }
+    };
 
     function controlsController() {
         var next = controls.getElementsByClassName('next')[0];
@@ -102,11 +116,39 @@ function Slider(id, userSettings) {
                 prev.className = 'prev'
             }
         }
+    };
+
+    function easing(currentIteration, startValue, changeInValue, totalIterations) {
+        return EasingFunctions[settings.easing](currentIteration, startValue, changeInValue, totalIterations);
+    };
+
+    function animate(draw, ind) {
+        var start = Date.now();
+        var iterationCount = 0;
+        var timer = setInterval(function () {
+            var timePassed = Date.now() - start;
+
+            if (timePassed > 1000) {
+                clearInterval(timer);
+                return;
+            }
+
+            draw(iterationCount);
+
+            iterationCount++;
+        }, 20)
+    };
+
+    function draw(iterationCount) {
+        var step = -easing(iterationCount, (currentIndex - 1) * 100, currentIndex * 100 - (currentIndex - 1) * 100, 50);
+        console.log(1)
+        innerSlider.style.left = step + '%';
     }
 
-    function goTo(ind) {
+
+    function goTo() {
+        animate(draw);
         setCurrentBullet();
-        innerSlider.style.left = (-(100 * ind)) + '%';
     }
 
     function navigateByBullets(e) {
@@ -114,7 +156,7 @@ function Slider(id, userSettings) {
             currentIndex = Number(e.target.getAttribute('data-index'));
 
             setCurrentBullet()
-            goTo(currentIndex);
+            goTo();
             controlsController();
         }
     }
@@ -136,7 +178,7 @@ function Slider(id, userSettings) {
                 currentIndex++;
             }
 
-            goTo(currentIndex);
+            goTo();
         }
 
         controlsController();
@@ -151,9 +193,20 @@ function Slider(id, userSettings) {
                 currentIndex--;
             }
 
-            goTo(currentIndex);
+            goTo();
         }
         controlsController();
+    }
+
+    function autoPlay() {
+        if (paused == false) {
+            if (settings.direction == 'right') {
+                next();
+            }
+            if (settings.direction == 'left') {
+                previous();
+            }
+        }
     }
 
     function setEvents() {
@@ -161,16 +214,26 @@ function Slider(id, userSettings) {
         controls.getElementsByClassName('next')[0].addEventListener('click', next);
 
         controls.getElementsByClassName('bullets')[0].addEventListener("click", navigateByBullets);
+
+        sliderWrapper.addEventListener('mouseover', function () {
+            paused = true;
+        });
+
+        sliderWrapper.addEventListener('mouseout', function () {
+            paused = false;
+        });
     }
 
 
     return {
         initialize: function () {
             createDOM();
-
             setWrapperWidth();
-
             setEvents();
+
+            if (settings.autoPlay == true) {
+                setInterval(autoPlay, settings.speed);
+            }
         }
 
     };

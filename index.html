@@ -24,11 +24,11 @@
     function ready() {
 
         var slider = new Slider('slider', {
-            speed: 200,
+            speed: 500,
             direction: 'right',
-            loop: true,
-            autoStart: true,
-            move: '111'
+            loop: false,
+            autoPlay: false,
+            easing: 'linear'
         });
 
         slider.initialize();
