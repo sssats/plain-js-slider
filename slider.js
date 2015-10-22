@@ -89,6 +89,7 @@ function Slider(id, userSettings) {
     function controlsController() {
         var next = controls.getElementsByClassName('next')[0];
         var prev = controls.getElementsByClassName('prev')[0];
+
         if (settings.loop == false) {
             if (currentIndex + 1 == slidesCount) {
                 next.className += ' disabled';
@@ -128,15 +129,28 @@ function Slider(id, userSettings) {
 
     function next() {
         if (!controls.getElementsByClassName('next')[0].classList.contains('disabled')) {
-            currentIndex++;
+
+            if (settings.loop == true && currentIndex + 1 == slidesCount) {
+                currentIndex = 0;
+            } else {
+                currentIndex++;
+            }
+
             goTo(currentIndex);
         }
+
         controlsController();
     }
 
     function previous() {
         if (!controls.getElementsByClassName('prev')[0].classList.contains('disabled')) {
-            currentIndex--;
+
+            if (settings.loop == true && currentIndex == 0) {
+                currentIndex = slidesCount - 1;
+            } else {
+                currentIndex--;
+            }
+
             goTo(currentIndex);
         }
         controlsController();
