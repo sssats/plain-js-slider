@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<article>
+<div class="main-container">
 
     <ul id="slider">
         <li class="item">1</li>
@@ -18,23 +18,21 @@
         <li class="item">5</li>
     </ul>
 
-</article>
+</div>
 
 <script type="text/javascript">
-    function ready() {
 
-        var slider = new Slider('slider', {
-            speed: 500,
-            direction: 'right',
-            loop: false,
-            autoPlay: false,
-            easing: 'linear'
-        });
+    var slider = new Slider('slider', {
+        speed: 500,
+        animationDuration: 500,
+        direction: 'right',
+        loop: true,
+        autoPlay: false,
+        easing: 'easeInQuart'
+    });
 
-        slider.initialize();
-    }
+    slider.initialize();
 
-    document.addEventListener("DOMContentLoaded", ready);
 </script>
 </body>
 </html>
